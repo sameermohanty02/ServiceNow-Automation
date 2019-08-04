@@ -14,12 +14,12 @@ Please note the below points:
 
 ## SNOW_FILTERING.py
 
-This is a python file which SNOW APIs to filter tickets based on its short description.
+This is a python file which uses Restful APIs to filter out tickets based on its short description.
 
 Based on its short description the automation would assign tickets to its respective queues.
 
 Please note the below points:
 
-- Uses Pysnow module.
-- While using qb(query builder which acts are a filter) you need to use ID of the assignement group and not the assignment group name.
-- But while assigning tickets you can use the group name.
+- I have used the existing Pysnow module.
+- While using qb(query builder which acts are a filter) you need to use ID of the assignement group and not the assignment group name itself.
+- But while assigning tickets you should use the group name.
