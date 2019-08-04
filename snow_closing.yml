@@ -1,0 +1,52 @@
+
+---
+- hosts: localhost
+  connection: local
+  name: Test connection ServiceNow
+  gather_facts: "False"
+
+  tasks:
+  - name: collect data
+    snow_record:
+     username: username
+     password: password
+     instance: <instance name>
+     state: present
+     number: INC0010042
+
+
+    register: incident_number
+
+
+  - name: Automated ping test
+    shell: "ping -c 5 {{ incident_number.record.short_description.split(':')[0]}}"
+    ignore_errors: yes
+    register: print_output
+  - debug: var=print_output.stdout_lines
+
+ 
+  - debug:
+      var=incident_number.record.number
+
+  - name: Close tickets in service now
+    snow_record:
+     username: admin
+     password: Socket@006
+     instance: dev28162
+     state: "6"
+     number: "{{incident_number.record.number}}"
+     data:
+      work_notes : "The host is reachable. \n  Below is the ping result. closing the ticket. \n {{print_output.stdout}}"
+    when: print_output.stdout is search(", 0% packet loss,")
+
+  - name: update tickets in service now
+    snow_record:
+     username: admin
+     password: Socket@006
+     instance: dev28162
+     state: present
+     number: "{{incident_number.record.number}}"
+     data:
+      work_notes : "The host is not reachable. \n  Below is the ping result. Ticket will be assigned to engineer shortly. \n {{print_output.stdout}}"
+    when: print_output.stdout is not search(", 0% packet loss,")
+  
